@@ -1,0 +1,15 @@
+loggingEnabled: false
+logDirectory: iisnode
+debuggingEnabled: false
+devErrorsEnabled: true
+asyncCompletionThreadCount: 0
+initialRequestBufferSize: 4096
+maxRequestBufferSize: 10485760
+watchedFiles: web.config;*.js
+uncFileChangesPollingInterval: 5000
+gracefulShutdownTimeout: 60000
+idlePageOutTimePeriod: 0
+maxLogFileSizeInKB: 128
+maxTotalLogFileSizeInKB: 1024
+maxLogFiles: 20
+logsDir: iisnode

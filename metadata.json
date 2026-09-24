@@ -1,0 +1,6 @@
+{
+  "name": "JB Mega Mart Kitchen",
+  "description": "Premium curated culinary destination app loaded with Landing, Checkout, and Admin screens.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
