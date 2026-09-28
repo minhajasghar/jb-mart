@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../constants/app_constants.dart';
-import '../services/cart_provider.dart';
-import '../screens/home_screen.dart';
+import 'package:flutter/services.dart';
+import 'constants/app_constants.dart';
+import 'screens/web_screen.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-      ],
-      child: const JBMegaMartApp(),
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Set system UI navigation and status bar style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: AppColors.background,
+      systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
+
+  runApp(const JBMegaMartApp());
 }
 
 class JBMegaMartApp extends StatelessWidget {
@@ -21,7 +25,7 @@ class JBMegaMartApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'JB Mega Mart Kitchen',
+      title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -29,7 +33,7 @@ class JBMegaMartApp extends StatelessWidget {
         primaryColor: AppColors.primary,
         colorScheme: const ColorScheme.dark(
           primary: AppColors.primary,
-          secondary: AppColors.secondary,
+          secondary: AppColors.accentGold,
           surface: AppColors.surface,
         ),
         appBarTheme: const AppBarTheme(
@@ -39,7 +43,7 @@ class JBMegaMartApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const WebScreen(),
     );
   }
 }

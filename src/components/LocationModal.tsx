@@ -43,7 +43,7 @@ export default function LocationModal() {
   return (
     <AnimatePresence>
       {!isLocationVerified && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -55,35 +55,35 @@ export default function LocationModal() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative bg-surface-container-low border border-white/5 w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden"
+            className="relative bg-surface-container-low border border-white/5 w-full max-w-xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden"
           >
-            <div className="p-10">
-              <div className="flex flex-col items-center mb-6">
-                <div className="bg-primary/10 p-4 rounded-full border border-primary/20 mb-3">
-                  <img src="/JBMM.png" alt="Logo" className="h-16 w-auto" />
+            <div className="p-5 sm:p-8 md:p-10 overflow-y-auto no-scrollbar">
+              <div className="flex flex-col items-center mb-4 sm:mb-6">
+                <div className="bg-primary/10 p-3 sm:p-4 rounded-full border border-primary/20 mb-2 sm:mb-3">
+                  <img src="/JBMM.png" alt="Logo" className="h-12 sm:h-16 w-auto object-contain" />
                 </div>
-                <span className="font-headline text-xl font-black text-primary tracking-tight">
+                <span className="font-headline text-lg sm:text-xl font-black text-primary tracking-tight">
                   JB Mega Mart Kitchen
                 </span>
               </div>
 
-              <h2 className="text-center font-headline text-3xl font-black mb-2 tracking-tight">Select your order type</h2>
-              <p className="text-center text-on-surface-variant text-sm mb-8">How would you like to receive your delicious meal?</p>
+              <h2 className="text-center font-headline text-2xl sm:text-3xl font-black mb-2 tracking-tight">Select your order type</h2>
+              <p className="text-center text-on-surface-variant text-xs sm:text-sm mb-6 sm:mb-8">How would you like to receive your delicious meal?</p>
 
-              <div className="grid grid-cols-2 gap-4 mb-10">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-10">
                 <button
                   onClick={() => setOrderType('Delivery')}
-                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-3xl transition-all border ${orderType === 'Delivery' ? 'bg-primary text-on-primary border-primary shadow-lg shadow-primary/20 scale-105' : 'bg-surface-container-highest text-on-surface-variant border-transparent hover:bg-surface-bright'}`}
+                  className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all border ${orderType === 'Delivery' ? 'bg-primary text-on-primary border-primary shadow-lg shadow-primary/20 scale-102 sm:scale-105' : 'bg-surface-container-highest text-on-surface-variant border-transparent hover:bg-surface-bright'}`}
                 >
-                  <Truck className="w-8 h-8" />
-                  <span className="font-bold">Delivery</span>
+                  <Truck className="w-6 h-6 sm:w-8 sm:h-8" />
+                  <span className="font-bold text-sm sm:text-base">Delivery</span>
                 </button>
                 <button
                   onClick={() => setOrderType('Pickup')}
-                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-3xl transition-all border ${orderType === 'Pickup' ? 'bg-primary text-on-primary border-primary shadow-lg shadow-primary/20 scale-105' : 'bg-surface-container-highest text-on-surface-variant border-transparent hover:bg-surface-bright'}`}
+                  className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all border ${orderType === 'Pickup' ? 'bg-primary text-on-primary border-primary shadow-lg shadow-primary/20 scale-102 sm:scale-105' : 'bg-surface-container-highest text-on-surface-variant border-transparent hover:bg-surface-bright'}`}
                 >
-                  <ShoppingBag className="w-8 h-8" />
-                  <span className="font-bold">Pick-Up</span>
+                  <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8" />
+                  <span className="font-bold text-sm sm:text-base">Pick-Up</span>
                 </button>
               </div>
 

@@ -156,14 +156,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      const Icon(Icons.local_offer, color: Colors.white, size: 24),
-                      const SizedBox(width: 12),
+                      Icon(Icons.local_offer, color: Colors.white, size: 24),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               'Special Promotion!',
                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),

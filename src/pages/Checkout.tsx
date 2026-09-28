@@ -281,9 +281,10 @@ export default function Checkout() {
 
       <div className="bg-background text-on-background selection:bg-primary selection:text-on-primary min-h-screen">
       {/* TopNavBar */}
-      <nav className="fixed top-0 w-full z-50 bg-[#131313]/70 backdrop-blur-[32px] flex justify-between items-center px-6 md:px-10 h-24 shadow-[0_40px_60px_rgba(229,226,225,0.05)]">
-        <Link to="/" className="flex items-center gap-5">
-          <img src="/JBMM.png" alt="JBMM Logo" className="h-16 md:h-20 w-auto object-contain" />
+      {/* TopNavBar */}
+      <nav className="fixed top-0 w-full z-50 bg-[#131313]/85 backdrop-blur-[32px] flex justify-between items-center px-4 sm:px-6 md:px-10 h-20 md:h-24 shadow-[0_40px_60px_rgba(229,226,225,0.05)]">
+        <Link to="/" className="flex items-center gap-2 sm:gap-4 md:gap-5">
+          <img src="/JBMM.png" alt="JBMM Logo" className="h-12 sm:h-16 md:h-20 w-auto object-contain" />
           <span className="hidden lg:block text-2xl font-black text-primary italic font-headline tracking-tight">
             JB Mega Mart Kitchen
           </span>
@@ -297,15 +298,15 @@ export default function Checkout() {
           <a className="text-[#e5e2e1]/60 font-medium font-headline hover:text-primary transition-all duration-300">About</a>
           <Link to="/checkout" className="text-primary font-bold border-b-2 border-primary pb-1 font-headline">Order</Link>
         </div>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2.5 sm:gap-4 md:gap-5">
           <button 
             onClick={() => setIsLocationVerified(false)}
-            className="flex items-center gap-2 px-3 py-2 rounded-full bg-surface-container-highest border border-white/5 hover:bg-surface-bright transition-all text-[10px] font-black uppercase tracking-widest text-primary shrink-0"
+            className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-surface-container-highest border border-white/5 hover:bg-surface-bright transition-all text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-primary shrink-0 max-w-[130px] sm:max-w-none truncate"
           >
             {orderType === 'Delivery' ? (
-              <><Truck className="w-3 h-3" /> {userLocation ? `${userLocation.substring(0, 10)}...` : 'Delivery'}</>
+              <><Truck className="w-3 h-3 shrink-0" /> <span className="truncate">{userLocation ? `${userLocation.substring(0, 10)}...` : 'Delivery'}</span></>
             ) : (
-              <><ShoppingBag className="w-3 h-3" /> Pickup</>
+              <><ShoppingBag className="w-3 h-3 shrink-0" /> Pickup</>
             )}
           </button>
           <Link 
@@ -316,25 +317,24 @@ export default function Checkout() {
                 setIsCartOpen(true);
               }
             }}
-            className="text-primary active:scale-95 transition-transform cursor-pointer relative"
+            className="text-primary active:scale-95 transition-transform cursor-pointer relative p-1"
           >
             <ShoppingCart className="w-6 h-6" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-primary text-on-primary text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+              <span className="absolute -top-1.5 -right-1.5 bg-primary text-on-primary text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md">
                 {cartItemCount}
               </span>
             )}
           </Link>
-
         </div>
       </nav>
 
-      <main className="pt-32 pb-20 px-6 md:px-10 max-w-7xl mx-auto">
-        <div className="mb-12">
-          <h1 className="font-headline text-5xl md:text-7xl font-black text-on-surface tracking-tighter italic">
+      <main className="pt-24 sm:pt-32 pb-20 px-4 sm:px-6 md:px-10 max-w-7xl mx-auto">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl font-black text-on-surface tracking-tighter italic">
             Checkout<span className="text-primary">.</span>
           </h1>
-          <p className="font-body text-secondary mt-4 max-w-lg">Finalize your delicious selection and prepare for a premium culinary experience delivered to your doorstep.</p>
+          <p className="font-body text-secondary mt-3 sm:mt-4 max-w-lg text-sm sm:text-base">Finalize your delicious selection and prepare for a premium culinary experience delivered to your doorstep.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
@@ -486,11 +486,11 @@ export default function Checkout() {
 
           {/* Right Column: Order Summary */}
           <div className="lg:col-span-5">
-            <div className="glass-card rounded-[2rem] p-8 sticky top-32 shadow-2xl shadow-black/50 overflow-hidden relative">
+            <div className="glass-card rounded-2xl md:rounded-[2rem] p-4 sm:p-6 md:p-8 sticky top-24 sm:top-32 shadow-2xl shadow-black/50 overflow-hidden relative">
               {/* Liquid Glow Accent */}
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 blur-[80px] rounded-full"></div>
               
-              <h2 className="font-headline text-3xl font-black mb-8 italic flex items-center justify-between">
+              <h2 className="font-headline text-2xl sm:text-3xl font-black mb-6 sm:mb-8 italic flex items-center justify-between">
                 <div>Your Order <span className="text-xs font-normal not-italic ml-2 px-3 py-1 bg-primary text-on-primary rounded-full">{cartItemCount} Items</span></div>
               </h2>
 
@@ -505,14 +505,14 @@ export default function Checkout() {
                   </div>
                 ) : (
                   cart.map(item => (
-                    <div key={item.id} className="flex items-center gap-4 group">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                    <div key={item.id} className="flex items-center gap-3 sm:gap-4 group">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0">
                         <img alt={item.name} className="w-full h-full object-cover" src={getProductImage(item, subcategories, categories)} />
                       </div>
                       <div className="flex-grow">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h4 className="font-bold text-on-surface leading-tight">{item.name}</h4>
+                            <h4 className="font-bold text-on-surface leading-tight text-sm sm:text-base">{item.name}</h4>
                             {item.subcategoryIds && item.subcategoryIds.length > 0 && (() => {
                               const selected = subcategories.filter(s => item.subcategoryIds!.includes(s.id));
                               return selected.length > 0 ? (
@@ -526,13 +526,13 @@ export default function Checkout() {
                               ) : null;
                             })()}
                           </div>
-                          <span className="text-primary font-headline font-bold whitespace-nowrap ml-4">Rs. {(item.price ?? 0) * item.quantity}</span>
+                          <span className="text-primary font-headline font-bold text-sm sm:text-base whitespace-nowrap ml-2 sm:ml-4">Rs. {(item.price ?? 0) * item.quantity}</span>
                         </div>
                         <div className="flex justify-between items-center mt-2">
                           <p className="text-xs text-secondary/50">
                             {item.variant ? `Variant: ${item.variant}` : `Qty: ${String(item.quantity).padStart(2, '0')}`}
                           </p>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                             <button onClick={() => updateQuantity(item.id, -1)} className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
                               <Minus className="w-3 h-3" />
                             </button>

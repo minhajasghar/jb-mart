@@ -299,9 +299,9 @@ export default function Landing() {
         </div>
       )}
 
-      <nav className="fixed top-0 z-50 bg-[#131313]/70 backdrop-blur-[32px] flex justify-between items-center px-6 md:px-10 h-24 w-full shadow-[0_40px_60px_rgba(229,226,225,0.05)]">
-        <Link to="/" className="flex items-center gap-5">
-          <img src="/JBMM.png" alt="JB Mega Mart Kitchen" className="h-16 md:h-20 w-auto object-contain" />
+      <nav className="fixed top-0 z-50 bg-[#131313]/85 backdrop-blur-[32px] flex justify-between items-center px-4 sm:px-6 md:px-10 h-20 md:h-24 w-full shadow-[0_40px_60px_rgba(229,226,225,0.05)]">
+        <Link to="/" className="flex items-center gap-2 sm:gap-4 md:gap-5">
+          <img src="/JBMM.png" alt="JB Mega Mart Kitchen" className="h-12 sm:h-16 md:h-20 w-auto object-contain" />
           <span className="hidden lg:block text-2xl font-black text-primary italic font-headline tracking-tight">
             JB Mega Mart Kitchen
           </span>
@@ -315,15 +315,15 @@ export default function Landing() {
           )}
           <Link to="/checkout" className="text-[#e5e2e1] font-medium hover:text-primary transition-all duration-300 active:scale-95 cursor-pointer">Order</Link>
         </div>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2.5 sm:gap-4 md:gap-5">
           <button 
             onClick={() => setIsLocationVerified(false)}
-            className="flex items-center gap-2 px-3 py-2 rounded-full bg-surface-container-highest border border-white/5 hover:bg-surface-bright transition-all text-[10px] font-black uppercase tracking-widest text-primary shrink-0"
+            className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-surface-container-highest border border-white/5 hover:bg-surface-bright transition-all text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-primary shrink-0 max-w-[130px] sm:max-w-none truncate"
           >
             {orderType === 'Delivery' ? (
-              <><Truck className="w-3 h-3" /> {userLocation ? `${userLocation.substring(0, 10)}...` : 'Delivery'}</>
+              <><Truck className="w-3 h-3 shrink-0" /> <span className="truncate">{userLocation ? `${userLocation.substring(0, 10)}...` : 'Delivery'}</span></>
             ) : (
-              <><ShoppingBag className="w-3 h-3" /> Pickup</>
+              <><ShoppingBag className="w-3 h-3 shrink-0" /> Pickup</>
             )}
           </button>
           <Link 
@@ -334,71 +334,70 @@ export default function Landing() {
                 setIsCartOpen(true);
               }
             }}
-            className="text-primary active:scale-95 transition-transform cursor-pointer relative"
+            className="text-primary active:scale-95 transition-transform cursor-pointer relative p-1"
           >
             <ShoppingCart className="w-6 h-6" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-primary text-on-primary text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+              <span className="absolute -top-1.5 -right-1.5 bg-primary text-on-primary text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md">
                 {cartItemCount}
               </span>
             )}
           </Link>
-
         </div>
       </nav>
-      <main className="pt-24">
-        <section className="relative h-auto lg:h-[85vh] lg:min-h-[600px] flex items-center overflow-hidden pt-20 pb-16 lg:py-0">
+      <main className="pt-20 md:pt-24">
+        <section className="relative h-auto lg:h-[85vh] lg:min-h-[600px] flex items-center overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 lg:py-0">
           <div className="absolute inset-0 z-0 bg-background pointer-events-none overflow-hidden">
             <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-primary/20 blur-[120px] rounded-full -translate-y-1/2"></div>
             <div className="absolute -top-32 right-10 w-96 h-96 bg-[#e5e2e1]/5 blur-[100px] rounded-full"></div>
           </div>
           
-          <div className="container mx-auto px-6 md:px-12 relative z-10 grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          <div className="container mx-auto px-4 sm:px-6 md:px-12 relative z-10 grid lg:grid-cols-12 gap-8 lg:gap-8 items-center">
             <div className="lg:col-span-5 max-w-2xl z-20">
-              <h1 className="text-6xl md:text-8xl font-headline font-black text-on-background leading-[0.9] mb-6">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-headline font-black text-on-background leading-[1.05] sm:leading-[0.9] mb-4 sm:mb-6">
                 Shop <span className="text-primary italic">Smart.</span><br/>Live Better.
               </h1>
-              <p className="text-xl md:text-2xl text-on-surface-variant font-medium mb-10 max-w-lg leading-relaxed">
+              <p className="text-base sm:text-xl md:text-2xl text-on-surface-variant font-medium mb-6 sm:mb-10 max-w-lg leading-relaxed">
                 Experience the fusion of high-end grocery shopping and premium culinary craftsmanship.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Link to="/checkout">
-                  <button className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-[0_20px_40px_rgba(185,29,29,0.3)]">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                <Link to="/checkout" className="w-full sm:w-auto">
+                  <button className="w-full sm:w-auto bg-primary text-on-primary px-8 py-3.5 sm:px-10 sm:py-5 rounded-full font-bold text-base sm:text-lg hover:scale-105 active:scale-95 transition-transform shadow-[0_20px_40px_rgba(185,29,29,0.3)]">
                     Order Now
                   </button>
                 </Link>
-                <button onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })} className="bg-surface-container-highest text-on-surface px-10 py-5 rounded-full font-bold text-lg hover:bg-surface-bright transition-colors glass-effect">
+                <button onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })} className="w-full sm:w-auto bg-surface-container-highest text-on-surface px-8 py-3.5 sm:px-10 sm:py-5 rounded-full font-bold text-base sm:text-lg hover:bg-surface-bright active:scale-95 transition-colors glass-effect">
                   Explore Menu
                 </button>
               </div>
             </div>
 
-            <div className="lg:col-span-7 relative w-full lg:w-[125%] lg:-ml-[5%] xl:-ml-[10%] aspect-video rounded-3xl overflow-hidden shadow-[0_40px_100px_rgba(185,29,29,0.2)] bg-background z-10">
+            <div className="lg:col-span-7 relative w-full lg:w-[125%] lg:-ml-[5%] xl:-ml-[10%] aspect-video rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_40px_100px_rgba(185,29,29,0.2)] bg-background z-10">
               <SeamlessYouTubeLoop videoId="lUhMx_1fcsI" />
               <div 
-                className="absolute inset-0 pointer-events-none z-20 rounded-3xl"
+                className="absolute inset-0 pointer-events-none z-20 rounded-2xl sm:rounded-3xl"
                 style={{
                   boxShadow: 'inset 0 0 80px 25px rgba(19, 19, 19, 1)'
                 }}
               ></div>
-              <div className="absolute inset-0 bg-primary/10 mix-blend-color z-30 rounded-3xl"></div>
-              <div className="absolute inset-0 z-40 bg-transparent rounded-3xl"></div>
+              <div className="absolute inset-0 bg-primary/10 mix-blend-color z-30 rounded-2xl sm:rounded-3xl"></div>
+              <div className="absolute inset-0 z-40 bg-transparent rounded-2xl sm:rounded-3xl"></div>
             </div>
           </div>
         </section>
-        <section id="menu" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+        <section id="menu" className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 sm:mb-16 gap-4 sm:gap-6">
             <div>
-              <h2 className="text-primary font-headline text-sm font-bold tracking-[0.2em] uppercase mb-4">Our Selection</h2>
-              <h3 className="text-4xl md:text-6xl font-headline font-extrabold">The Master Menu</h3>
+              <h2 className="text-primary font-headline text-xs sm:text-sm font-bold tracking-[0.2em] uppercase mb-2 sm:mb-4">Our Selection</h2>
+              <h3 className="text-3xl sm:text-4xl md:text-6xl font-headline font-extrabold">The Master Menu</h3>
             </div>
-            <p className="text-on-surface-variant max-w-xs text-right italic font-medium">Curated ingredients met with precise culinary techniques.</p>
+            <p className="text-on-surface-variant max-w-xs text-left md:text-right italic font-medium text-xs sm:text-sm">Curated ingredients met with precise culinary techniques.</p>
           </div>
           {/* Scrollable Mobile Category Menu */}
-          <div className="md:hidden sticky top-24 z-40 -mx-6 px-6 py-4 bg-background/90 backdrop-blur-md border-b border-white/5 overflow-hidden">
+          <div className="md:hidden sticky top-20 z-40 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-background/95 backdrop-blur-md border-b border-white/5 overflow-hidden">
             <div 
               ref={scrollContainerRef}
-              className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1 scroll-smooth"
+              className="flex gap-2 overflow-x-auto no-scrollbar pb-0.5 scroll-smooth"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {categoryCounts.map(cat => (
@@ -406,7 +405,7 @@ export default function Landing() {
                   key={cat.id}
                   data-category-id={cat.id}
                   onClick={() => scrollToCategory(cat.id)}
-                  className={`rounded-full px-4 py-2.5 text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 whitespace-nowrap active:scale-95 border ${
+                  className={`rounded-full px-3.5 py-2 text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 whitespace-nowrap active:scale-95 border shrink-0 ${
                     activeCategory === cat.id
                       ? 'bg-primary text-on-primary border-primary shadow-lg shadow-primary/20'
                       : 'bg-surface-container-low text-[#e5e2e1]/60 border-white/5 hover:text-primary'
@@ -437,15 +436,15 @@ export default function Landing() {
                           <img className="w-full h-full object-cover rounded-[2rem]" alt={cat.name} src={cat.image} />
                         </div>
                       )}
-                      <div className={`${isCompact ? 'p-0' : 'p-8'} flex-1 flex flex-col`}>
+                      <div className={`${isCompact ? 'p-0' : 'p-4 sm:p-6 md:p-8'} flex-1 flex flex-col`}>
                         {isCompact ? (
-                          <div className="flex">
+                          <div className="flex flex-col sm:flex-row">
                             {cat.image && (
-                              <div className="w-40 h-40 flex-shrink-0 self-center ml-1 overflow-hidden rounded-xl">
+                              <div className="w-28 h-28 sm:w-40 sm:h-40 flex-shrink-0 self-center m-2 sm:ml-1 overflow-hidden rounded-xl">
                                 <img className="w-full h-full object-cover" alt="" src={cat.image} />
                               </div>
                             )}
-                            <div className="flex-1 min-w-0 p-2 pl-3">
+                            <div className="flex-1 min-w-0 p-3 sm:p-2 sm:pl-3">
                               <h4 className="font-headline font-bold text-3xl mb-3">{cat.name}</h4>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
                                 {(subcatSections as { subcategory: Subcategory; products: Product[] }[]).map(({ subcategory: sc, products: scProducts }) => {
@@ -530,19 +529,19 @@ export default function Landing() {
                                         : 'border-white/5 bg-surface-container-highest/30 hover:bg-surface-container-highest/50 hover:border-white/10'
                                     }`}>
                                       {!hideImage && (
-                                        <div className="relative w-36 h-36 flex-shrink-0 overflow-hidden bg-surface-container-highest">
+                                        <div className="relative w-24 h-24 sm:w-36 sm:h-36 flex-shrink-0 overflow-hidden bg-surface-container-highest">
                                           {sc.image ? (
                                             <img src={sc.image} alt="" className="w-full h-full object-cover" />
                                           ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-surface-container-highest">
-                                              <span className="text-3xl font-bold text-on-surface-variant/20">{sc.name[0]}</span>
+                                              <span className="text-2xl sm:text-3xl font-bold text-on-surface-variant/20">{sc.name[0]}</span>
                                             </div>
                                           )}
                                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                          <span className="absolute bottom-2 left-2.5 text-white font-bold text-sm drop-shadow-md leading-tight">{sc.name}</span>
+                                          <span className="absolute bottom-1.5 left-2 sm:bottom-2 sm:left-2.5 text-white font-bold text-xs sm:text-sm drop-shadow-md leading-tight">{sc.name}</span>
                                         </div>
                                       )}
-                                      <div className="flex-1 flex items-center justify-between px-5 py-4">
+                                      <div className="flex-1 flex items-center justify-between px-3 py-2.5 sm:px-5 sm:py-4">
                                         {hideImage && (
                                           <span className="text-on-surface font-bold text-base">{sc.name}</span>
                                         )}
@@ -598,14 +597,14 @@ export default function Landing() {
               if (catProducts.length === 0) return null;
               return (
                 <div key={cat.id} id={cat.id} className="md:col-span-12 bg-surface-container-low rounded-[2rem] overflow-hidden scroll-mt-32">
-                  <div className={`flex flex-col md:flex-row ${cat.image ? 'h-full' : 'p-8'}`}>
+                  <div className={`flex flex-col md:flex-row ${cat.image ? 'h-full' : 'p-4 sm:p-6 md:p-8'}`}>
                     {cat.image && (
                       <div className="md:w-1/3 relative overflow-hidden min-h-[200px]">
-                        <img className="w-full h-full object-cover rounded-[2rem]" alt={cat.name} src={cat.image} />
+                        <img className="w-full h-full object-cover rounded-2xl md:rounded-[2rem]" alt={cat.name} src={cat.image} />
                       </div>
                     )}
-                    <div className={`${cat.image ? 'md:w-2/3 p-8' : ''} flex flex-col`}>
-                      <h4 className="text-2xl font-headline font-bold mb-4">{cat.name}</h4>
+                    <div className={`${cat.image ? 'md:w-2/3 p-4 sm:p-6 md:p-8' : ''} flex flex-col`}>
+                      <h4 className="text-xl sm:text-2xl font-headline font-bold mb-3 sm:mb-4">{cat.name}</h4>
                       <div className="flex-1 flex flex-col justify-center">
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {catProducts.map(p => (
@@ -628,8 +627,8 @@ export default function Landing() {
               const uncategorized = products.filter(p => (!p.categoryId || !categories.some(c => c.id === p.categoryId)) && !p.isOutOfStock);
               if (uncategorized.length === 0) return null;
               return (
-                <div className="md:col-span-12 bg-surface-container-low rounded-[2rem] overflow-hidden scroll-mt-32 p-8">
-                  <h4 className="text-2xl font-headline font-bold mb-4">Other Items</h4>
+                <div className="md:col-span-12 bg-surface-container-low rounded-2xl md:rounded-[2rem] overflow-hidden scroll-mt-32 p-4 sm:p-6 md:p-8">
+                  <h4 className="text-xl sm:text-2xl font-headline font-bold mb-3 sm:mb-4">Other Items</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {uncategorized.map(p => (
                       <div key={p.id} className="flex justify-between items-center bg-surface-container/50 p-4 rounded-xl group/item hover:bg-surface-container-highest transition-colors">

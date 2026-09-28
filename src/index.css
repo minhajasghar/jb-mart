@@ -55,10 +55,18 @@
   --font-label: "Manrope", sans-serif;
 }
 
-body {
+html, body {
     background-color: var(--color-background);
     color: var(--color-on-surface);
     font-family: var(--font-body);
+    overflow-x: hidden;
+    max-width: 100vw;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+img {
+    max-width: 100%;
 }
 
 .glass-effect, .glass-card {
