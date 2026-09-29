@@ -13,7 +13,31 @@ class CartScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Cart'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('My Cart'),
+            if (cart.items.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${cart.itemCount} ${cart.itemCount == 1 ? "Item" : "Items"}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
         actions: [
           if (cart.items.isNotEmpty)
             IconButton(
@@ -76,21 +100,61 @@ class CartScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle_outline, color: AppColors.textSecondary),
-                                onPressed: () => cart.updateQuantity(index, -1),
+                          // Stepper pill + trash button
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceLight,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: AppColors.surfaceBorder),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                InkWell(
+                                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(24)),
+                                  onTap: () => cart.updateQuantity(index, -1),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    child: Icon(
+                                      item.quantity > 1 ? Icons.remove : Icons.delete_outline,
+                                      size: 18,
+                                      color: item.quantity > 1 ? AppColors.textSecondary : AppColors.error,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  child: Text(
+                                    '${item.quantity}',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                  ),
+                                ),
+                                InkWell(
+                                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(24)),
+                                  onTap: () => cart.updateQuantity(index, 1),
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    child: Icon(Icons.add, size: 18, color: AppColors.primaryLight),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => cart.removeItem(index),
+                            child: Container(
+                              padding: const EdgeInsets.all(7),
+                              decoration: BoxDecoration(
+                                color: AppColors.error.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              Text(
-                                '${item.quantity}',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              child: const Icon(
+                                Icons.delete_outline,
+                                size: 18,
+                                color: AppColors.error,
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.add_circle_outline, color: AppColors.primaryLight),
-                                onPressed: () => cart.updateQuantity(index, 1),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       );

@@ -490,8 +490,11 @@ export default function Checkout() {
               {/* Liquid Glow Accent */}
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 blur-[80px] rounded-full"></div>
               
-              <h2 className="font-headline text-2xl sm:text-3xl font-black mb-6 sm:mb-8 italic flex items-center justify-between">
-                <div>Your Order <span className="text-xs font-normal not-italic ml-2 px-3 py-1 bg-primary text-on-primary rounded-full">{cartItemCount} Items</span></div>
+              <h2 className="font-headline text-2xl sm:text-3xl font-black mb-6 sm:mb-8 italic flex items-center gap-3">
+                Your Order
+                <span className="text-xs font-normal not-italic px-3 py-1 bg-primary text-on-primary rounded-full whitespace-nowrap">
+                  {cartItemCount} {cartItemCount === 1 ? 'Item' : 'Items'}
+                </span>
               </h2>
 
               <div className="space-y-6 mb-10 max-h-[50vh] overflow-y-auto no-scrollbar pr-2">
@@ -529,19 +532,28 @@ export default function Checkout() {
                           <span className="text-primary font-headline font-bold text-sm sm:text-base whitespace-nowrap ml-2 sm:ml-4">Rs. {(item.price ?? 0) * item.quantity}</span>
                         </div>
                         <div className="flex justify-between items-center mt-2">
-                          <p className="text-xs text-secondary/50">
-                            {item.variant ? `Variant: ${item.variant}` : `Qty: ${String(item.quantity).padStart(2, '0')}`}
-                          </p>
-                          <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => updateQuantity(item.id, -1)} className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+                          {item.variant && (
+                            <p className="text-xs text-secondary/50">Variant: {item.variant}</p>
+                          )}
+                          <div className="flex items-center gap-1 ml-auto">
+                            <button
+                              onClick={() => updateQuantity(item.id, -1)}
+                              className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90"
+                            >
                               <Minus className="w-3 h-3" />
                             </button>
-                            <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.id, 1)} className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors">
+                            <span className="text-sm font-bold w-6 text-center">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item.id, 1)}
+                              className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90"
+                            >
                               <Plus className="w-3 h-3" />
                             </button>
-                            <button onClick={() => removeFromCart(item.id)} className="ml-2 text-error hover:text-error/80 transition-colors">
-                              <Trash2 className="w-4 h-4" />
+                            <button
+                              onClick={() => removeFromCart(item.id)}
+                              className="ml-1 w-7 h-7 rounded-full bg-error/10 flex items-center justify-center text-error hover:bg-error hover:text-white transition-colors active:scale-90"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'constants/app_constants.dart';
 import 'screens/web_screen.dart';
+import 'services/cart_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +18,12 @@ void main() {
     ),
   );
 
-  runApp(const JBMegaMartApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CartProvider(),
+      child: const JBMegaMartApp(),
+    ),
+  );
 }
 
 class JBMegaMartApp extends StatelessWidget {
