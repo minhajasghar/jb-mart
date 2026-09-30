@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,10 +17,13 @@ class WebScreen extends StatefulWidget {
 
 class _WebScreenState extends State<WebScreen> {
   late final WebViewController _controller;
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+
   bool _isLoading = true;
   int _loadingProgress = 0;
-  bool _hasError = false;
-  String _errorMessage = '';
+  bool _isOffline = false;
+  bool _isRetrying = false;
   bool _initialLoadComplete = false;
   String _currentUrl = AppConstants.defaultWebAppUrl;
   DateTime? _lastBackPressTime;
@@ -28,12 +34,64 @@ class _WebScreenState extends State<WebScreen> {
     _initWebView();
   }
 
+  @override
+  void dispose() {
+    _connectivitySubscription?.cancel();
+    super.dispose();
+  }
+
+  bool _isOfflineFromResults(List<ConnectivityResult> results) {
+    if (results.isEmpty) return true;
+    return results.every((r) => r == ConnectivityResult.none);
+  }
+
+  Future<bool> _checkInternetConnection() async {
+    try {
+      final results = await _connectivity.checkConnectivity();
+      if (_isOfflineFromResults(results)) {
+        return false;
+      }
+
+      // Verify active reachability with a fast DNS lookup
+      try {
+        final uri = Uri.tryParse(_currentUrl);
+        final host = (uri != null && uri.host.isNotEmpty) ? uri.host : 'kitchen.jbmegamart.com';
+        // Allow local dev/emulator host without external DNS check
+        if (host == 'localhost' || host == '10.0.2.2' || host.startsWith('192.168.') || host.startsWith('127.')) {
+          return true;
+        }
+
+        final lookup = await InternetAddress.lookup(host).timeout(const Duration(seconds: 3));
+        return lookup.isNotEmpty && lookup[0].rawAddress.isNotEmpty;
+      } catch (_) {
+        // Fallback to check general internet reachability
+        try {
+          final fallback = await InternetAddress.lookup('one.one.one.one').timeout(const Duration(seconds: 2));
+          return fallback.isNotEmpty && fallback[0].rawAddress.isNotEmpty;
+        } catch (_) {
+          return false;
+        }
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> _initWebView() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUrl = prefs.getString(AppConstants.storageKeyCustomUrl);
     if (savedUrl != null && savedUrl.trim().isNotEmpty) {
       _currentUrl = savedUrl.trim();
     }
+
+    // Monitor connectivity changes at runtime
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((results) {
+      final isOffline = _isOfflineFromResults(results);
+      if (!isOffline && _isOffline && mounted) {
+        // Auto-retry when connection is re-established
+        _retryConnection();
+      }
+    });
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -55,7 +113,6 @@ class _WebScreenState extends State<WebScreen> {
             if (mounted) {
               setState(() {
                 _isLoading = true;
-                _hasError = false;
               });
             }
           },
@@ -63,17 +120,20 @@ class _WebScreenState extends State<WebScreen> {
             if (mounted) {
               setState(() {
                 _isLoading = false;
+                _isOffline = false;
                 _initialLoadComplete = true;
               });
             }
           },
           onWebResourceError: (error) {
+            // When a network/loading error occurs, display the offline screen
+            // instead of the default browser error page
             if (error.isForMainFrame ?? true) {
               if (mounted) {
                 setState(() {
-                  _hasError = true;
-                  _errorMessage = error.description;
+                  _isOffline = true;
                   _isLoading = false;
+                  _initialLoadComplete = true;
                 });
               }
             }
@@ -103,15 +163,68 @@ class _WebScreenState extends State<WebScreen> {
         ),
       );
 
-    _loadCurrentUrl();
+    await _loadCurrentUrl();
   }
 
-  void _loadCurrentUrl() {
+  Future<void> _loadCurrentUrl() async {
+    final hasInternet = await _checkInternetConnection();
+    if (!mounted) return;
+
+    if (!hasInternet) {
+      setState(() {
+        _isOffline = true;
+        _isLoading = false;
+        _initialLoadComplete = true;
+      });
+      return;
+    }
+
     setState(() {
-      _hasError = false;
+      _isOffline = false;
       _isLoading = true;
     });
-    _controller.loadRequest(Uri.parse(_currentUrl));
+
+    final target = _currentUrl.isNotEmpty ? _currentUrl : AppConstants.defaultWebAppUrl;
+    _controller.loadRequest(Uri.parse(target));
+  }
+
+  Future<void> _retryConnection() async {
+    if (_isRetrying) return;
+    setState(() {
+      _isRetrying = true;
+    });
+
+    final bool connected = await _checkInternetConnection();
+
+    if (!mounted) return;
+
+    if (connected) {
+      setState(() {
+        _isOffline = false;
+        _isLoading = true;
+        _isRetrying = false;
+      });
+      final target = _currentUrl.isNotEmpty ? _currentUrl : AppConstants.defaultWebAppUrl;
+      _controller.loadRequest(Uri.parse(target));
+    } else {
+      setState(() {
+        _isRetrying = false;
+      });
+
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Still no connection. Please check your Wi-Fi or mobile data.',
+            style: TextStyle(color: Colors.white, fontSize: 13),
+          ),
+          backgroundColor: AppColors.surfaceLight,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   Future<void> _changeServerUrl(String newUrl) async {
@@ -122,7 +235,7 @@ class _WebScreenState extends State<WebScreen> {
     setState(() {
       _currentUrl = clean;
     });
-    _loadCurrentUrl();
+    await _loadCurrentUrl();
   }
 
   void _showUrlSettingsDialog() {
@@ -255,7 +368,7 @@ class _WebScreenState extends State<WebScreen> {
   Future<void> _handlePopScope(bool didPop) async {
     if (didPop) return;
 
-    if (await _controller.canGoBack()) {
+    if (!_isOffline && await _controller.canGoBack()) {
       await _controller.goBack();
       return;
     }
@@ -296,11 +409,8 @@ class _WebScreenState extends State<WebScreen> {
             bottom: false,
             child: Stack(
               children: [
-                // Error Screen
-                if (_hasError)
-                  _buildErrorView()
-                else
-                  // WebView with Pull-To-Refresh
+                // Active WebView with Pull-To-Refresh when online
+                if (!_isOffline)
                   RefreshIndicator(
                     color: AppColors.primary,
                     backgroundColor: AppColors.surface,
@@ -311,7 +421,7 @@ class _WebScreenState extends State<WebScreen> {
                   ),
 
                 // Top Loading Linear Indicator
-                if (_isLoading && !_hasError)
+                if (_isLoading && !_isOffline)
                   Positioned(
                     top: 0,
                     left: 0,
@@ -324,8 +434,12 @@ class _WebScreenState extends State<WebScreen> {
                     ),
                   ),
 
+                // Clean dark theme offline / no internet screen
+                if (_isOffline)
+                  _buildOfflineView(),
+
                 // Initial Startup Splash Screen with Brand Logo
-                if (!_initialLoadComplete && !_hasError)
+                if (!_initialLoadComplete && !_isOffline)
                   _buildSplashScreen(),
               ],
             ),
@@ -399,97 +513,136 @@ class _WebScreenState extends State<WebScreen> {
     );
   }
 
-  Widget _buildErrorView() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.surfaceBorder, width: 2),
+  Widget _buildOfflineView() {
+    return RefreshIndicator(
+      color: AppColors.primary,
+      backgroundColor: AppColors.surface,
+      onRefresh: _retryConnection,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
               ),
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/JBMM.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Connection Error',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              _errorMessage.isNotEmpty
-                  ? _errorMessage
-                  : 'Unable to connect to the JB Mega Mart web application.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.surfaceBorder),
-              ),
-              child: Text(
-                _currentUrl,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontFamily: 'monospace',
-                  color: AppColors.textMuted,
-                ),
-              ),
-            ),
-            const SizedBox(height: 28),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Subtle Wi-Fi off icon (in red or white)
+                      Container(
+                        width: 96,
+                        height: 96,
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.surfaceBorder,
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withAlpha(30),
+                              blurRadius: 28,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.wifi_off_rounded,
+                            size: 44,
+                            color: AppColors.primaryLight,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+
+                      // Title: 'No Internet Connection' in bold white text
+                      const Text(
+                        'No Internet Connection',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Subtitle: in muted grey text
+                      const Text(
+                        'This app requires an active internet connection to browse the menu and place orders.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Red rounded 'Retry' button
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 42,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          elevation: 3,
+                          shadowColor: AppColors.primary.withAlpha(90),
+                        ),
+                        onPressed: _isRetrying ? null : _retryConnection,
+                        child: _isRetrying
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : const Text(
+                                'Retry',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Server URL configuration for developer/testing convenience
+                      TextButton.icon(
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.textMuted,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        ),
+                        onPressed: _showUrlSettingsDialog,
+                        icon: const Icon(Icons.settings_outlined, size: 16),
+                        label: const Text(
+                          'Server Settings',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
                   ),
-                  onPressed: _loadCurrentUrl,
-                  icon: const Icon(Icons.refresh, size: 18),
-                  label: const Text('Retry', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-                const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: AppColors.surfaceBorder),
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: _showUrlSettingsDialog,
-                  icon: const Icon(Icons.settings, size: 18),
-                  label: const Text('Change URL'),
-                ),
-              ],
+              ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
