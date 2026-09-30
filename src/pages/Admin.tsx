@@ -693,7 +693,7 @@ export default function Admin() {
                 <div className="text-3xl font-mono font-black text-on-surface">{formatTime(remainingLockoutTime)}</div>
               </div>
             ) : (
-              <form onSubmit={handleLogin} className="space-y-6">
+              <form onSubmit={handleLogin} className="space-y-6" autoComplete="off">
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-primary group-focus-within:scale-110 transition-transform">
                     <Settings className="w-5 h-5" />
@@ -701,6 +701,7 @@ export default function Admin() {
                   <input 
                     type="password" 
                     placeholder="Admin Password"
+                    autoComplete="new-password"
                     className="w-full bg-surface-container-highest border-none rounded-2xl p-5 pl-12 text-on-surface focus:ring-2 focus:ring-primary transition-all text-center tracking-[0.3em] font-black"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -740,8 +741,8 @@ export default function Admin() {
     <div className="bg-background text-on-background min-h-screen selection:bg-primary selection:text-on-primary">
       {/* Modal Overlay */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
-          <div className="bg-surface-container-low w-full max-w-lg rounded-[2.5rem] p-10 border border-white/5 shadow-2xl relative overflow-hidden">
+        <div className="fixed inset-0 z-[100] flex items-start justify-center p-6 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="bg-surface-container-low w-full max-w-lg rounded-[2.5rem] p-10 border border-white/5 shadow-2xl relative my-auto">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
             <div className="relative z-10">
               <div className="flex justify-between items-center mb-8">
